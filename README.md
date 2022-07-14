@@ -6,7 +6,7 @@ Official implementation of dual quaternion transformations as described in the p
 Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details!
 
 <p float="center">
-  <img src="/assets/DQ_21.gif" width="75%" />
+  <img src="/assets/DQ_21.gif" width="100%" />
 </p>
 
 Check our YouTube video for [qualitative results](https://www.youtube.com/watch?v=bZKc_8s-XIk).
