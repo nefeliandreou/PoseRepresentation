@@ -14,6 +14,12 @@ conda env create -f environment.yml
 conda activate deep_env
 ```
 
+## Instructions
+### 1. For acRNN 
+
+### 2. For QuaterNet
+The transformations used for the [**QuaterNet**](https://github.com/facebookresearch/QuaterNet) experiments can be found in $src_QuaterNet. 
+
 #### Bibtex
 If you find this code useful in your research, please cite:
 ```
