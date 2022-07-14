@@ -1,10 +1,16 @@
 # Pose Representations for Deep Skeletal Animation
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
+> [Nefeli Andreou](nefeliandreou.github.io)
 
 Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details!
 
-The code was tested on Python 3.6.9 and PyTorch 1.2.0. 
+<p float="center">
+  <img src="doc/assets/DQ_21.gif" width="75%" />
+ </p>
+
+Check our YouTube video for [qualitative results]https://www.youtube.com/watch?v=bZKc_8s-XIk).
+
 
 ## Installation 
 ### 1. Create conda environment
@@ -13,6 +19,8 @@ The code was tested on Python 3.6.9 and PyTorch 1.2.0.
 conda env create -f environment.yml
 conda activate deep_env
 ```
+The code was tested on Python 3.6.9 and PyTorch 1.2.0. 
+
 ## Usage
 
 - The files [extenddb.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/extenddb.py) and [generate_motion_in_dualquaternions.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/generate_motion_in_dualquaternions.py) are used to convert the .bvh files to the different representations. 
