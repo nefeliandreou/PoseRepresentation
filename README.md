@@ -1,7 +1,7 @@
 # Pose Representations for Deep Skeletal Animation
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
-> [Nefeli Andreou](nefeliandreou.github.io)
+> [Nefeli Andreou](https://nefeliandreou.github.io), [Andreas Aristidou](http://andreasaristidou.com) and [Yiorgos Chrysanthou](http://www.cs.ucy.ac.cy/~yiorgos/). 
 
 Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details!
 
@@ -28,6 +28,16 @@ The code was tested on Python 3.6.9 and PyTorch 1.2.0.
 - The file [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py) contains the operations which are used during training (calculating translation/rotation, etc.)
 - The file [twist_losses.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/twist_losses.py) contains the operations which are used during training of acRNN and is based on  [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py). 
 
+
+## License
+This code is distributed under an [MIT LICENSE](LICENSE).
+
+Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), while the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion). 
+
+## Acknowledgments
+
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 860768
+
 #### Bibtex
 If you find this code useful in your research, please cite:
 ```
@@ -40,7 +50,3 @@ If you find this code useful in your research, please cite:
 }
 ```
 
-## License
-This code is distributed under an [MIT LICENSE](LICENSE).
-
-Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), while the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion). 
