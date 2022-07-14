@@ -1,8 +1,6 @@
 # Pose Representations for Deep Skeletal Animation
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
-> [Nefeli Andreou](https://nefeliandreou.github.io), [Andreas Aristidou](http://andreasaristidou.com) and [Yiorgos Chrysanthou](http://www.cs.ucy.ac.cy/~yiorgos/). 
-
 Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details!
 
 <p float="center">
