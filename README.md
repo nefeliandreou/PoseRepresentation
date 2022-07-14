@@ -13,7 +13,7 @@ Create conda environment
 
 ```
 conda env create -f environment.yml
-conda activate deep_env
+conda activate dq_env
 ```
 The code was tested on Python 3.6.9 and PyTorch 1.2.0. 
 
@@ -34,7 +34,7 @@ Note that the functions in [common](https://github.com/nefeliandreou/PoseReprese
 
 This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 860768.
 
-#### Bibtex
+## Citation
 If you find this code useful in your research, please cite:
 ```
 @misc{Andreou:2021:PoseRepresentation,

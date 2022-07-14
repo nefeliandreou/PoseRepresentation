@@ -1,4 +1,4 @@
-name: deep_env
+name: dq_env
 channels:
   - owlas
   - bioconda
