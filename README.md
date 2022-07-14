@@ -2,14 +2,14 @@
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
 
-Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details and check our YouTube video for [qualitative results](https://www.youtube.com/watch?v=bZKc_8s-XIk).
+Please visit our [project page](https://nefeliandreou.github.io/projects/pose_representation/) for more details and check our YouTube video for [qualitative results](https://www.youtube.com/watch?v=bZKc_8s-XIk).
 
 <p float="center">
   <img src="/assets/DQ_21.gif" width="100%" />
 </p>
 
 ## Installation 
-### 1. Create conda environment
+Create conda environment
 
 ```
 conda env create -f environment.yml
@@ -32,14 +32,14 @@ Note that the functions in [common](https://github.com/nefeliandreou/PoseReprese
 
 ## Acknowledgments
 
-This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 860768
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement No 860768.
 
 #### Bibtex
 If you find this code useful in your research, please cite:
 ```
-@misc{Andreou:2021:DQ,
+@misc{Andreou:2021:PoseRepresentation,
     author = {Andreou, Nefeli and Aristidou, Andreas and Chrysanthou, Yiorgos},
-    title = {A Hierarchy-Aware Pose Representation for Deep Character Animation},
+    title = {Pose Representations for Deep Skeletal Animation},
     eprint={2111.13907},
     year  = {2021},
     archivePrefix={arXiv}
