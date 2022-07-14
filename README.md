@@ -1,14 +1,12 @@
 # Pose Representations for Deep Skeletal Animation
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
-Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details!
+
+Please visit our [**project page**](https://nefeliandreou.github.io/projects/pose_representation/) for more details and check our YouTube video for [qualitative results](https://www.youtube.com/watch?v=bZKc_8s-XIk).
 
 <p float="center">
   <img src="/assets/DQ_21.gif" width="100%" />
 </p>
-
-Check our YouTube video for [qualitative results](https://www.youtube.com/watch?v=bZKc_8s-XIk).
-
 
 ## Installation 
 ### 1. Create conda environment
