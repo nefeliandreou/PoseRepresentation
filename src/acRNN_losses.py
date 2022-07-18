@@ -15,6 +15,24 @@ Quaternion = quaternion.quaternion
 
 def qrl_local(out_seq, groundtruth_seq, batch=32, seq_len=100, joints_num=31, order='zxy', translation_dims=3,
               quats=False, fc=True, parh=None):
+    """function to calculate local rotation loss
+    inputs
+    --------
+    out_seq: torch.tensor, acRNN prediction
+    groundtruth_seq:  torch.tensor, ground-truth sequence
+    batch: int, batch size
+    seq_len: int, sequence length
+    joints_num: int, number of joints
+    order: str, rotation order
+    translation_dims: int, 3 for acRNN
+    quats: bool, True if quats are used, False for dual quats
+    fc: bool, foot contact labels 
+    parh: list, joints hierarchy
+    
+    outputs
+    --------
+    local rotation loss
+    """
     predicted = out_seq
     expected = groundtruth_seq
 
@@ -83,6 +101,23 @@ def qrl_local(out_seq, groundtruth_seq, batch=32, seq_len=100, joints_num=31, or
 
 def qrl_curr(out_seq, groundtruth_seq, batch=32, seq_len=100, joints_num=31, order='zxy', translation_dims=3,
              fc=True):  # groundtruth_seq 32,25100(251*100)
+    """function to calculate current rotation loss
+    inputs
+    --------
+    out_seq: torch.tensor, acRNN prediction
+    groundtruth_seq:  torch.tensor, ground-truth sequence
+    batch: int, batch size
+    seq_len: int, sequence length
+    joints_num: int, number of joints
+    order: str, rotation order
+    translation_dims: int, 3 for acRNN
+    quats: bool, True if quats are used, False for dual quats
+    fc: bool, foot contact labels 
+    
+    outputs
+    --------
+    current rotation loss
+    """
     start = time.time()
     predicted_quats = out_seq
     expected_quats = groundtruth_seq
@@ -109,6 +144,23 @@ def qrl_curr(out_seq, groundtruth_seq, batch=32, seq_len=100, joints_num=31, ord
 
 
 def dl(out_seq, groundtruth_seq, fc=False, bl=True, parh=None,batch = 32, seq_len = 100,joints_num = 31):
+    """function to calculate positional loss
+    inputs
+    --------
+    out_seq: torch.tensor, acRNN prediction
+    groundtruth_seq:  torch.tensor, ground-truth sequence
+    fc: bool, foot contact labels 
+    bl: bool, calculate bone loss (offset loss)
+    parh: list, joints hierarchy
+    batch: int, batch size
+    seq_len: int, sequence length
+    joints_num: int, number of joints
+   
+    
+    outputs
+    --------
+    positional loss
+    """
     boneloss=0
     parh[0] = 0
     predicted_dual = out_seq.view(batch, seq_len, -1)
@@ -138,6 +190,22 @@ def dl(out_seq, groundtruth_seq, fc=False, bl=True, parh=None,batch = 32, seq_le
 
 
 def out_dq_norm(predicted, batch_size, seq_len,fc,names=None,quats=False,nj=31):  # out (32,253000)
+    """function that normalizes quaternions and dual quaternions
+    
+    inputs
+    ---------
+    predicted: torch.tensor, acRNN output
+    batch_size: int, batch size
+    seq_len: int, sequence length
+    fc: bool, foot contact labels
+    names: list, for MIXAMO characters (not used)
+    quats: bool, True for quaternions/False for dual quaternions
+    nj: int, number of joints
+    
+    outputs
+    ---------
+    torch.tensor, normalized quaternions/dual quaternions, shape: predicted.shape
+    """
     if fc:
         if quats:
             dq = F.normalize(predicted.view(batch_size, seq_len, -1)[:, :, 3:3+4*nj].reshape(-1, 4)).view(batch_size,

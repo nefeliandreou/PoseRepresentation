@@ -210,6 +210,7 @@ class loadbvh:
         return temp
 
     def seq6Dframes2euler(seq6Dframes, order='zxy'):  # 1,189
+    """convert 6D frames to Euler"""
         temp = []
         for seq in seq6Dframes:
             temp.append(loadbvh.seq6D2euler(seq, order))
@@ -329,7 +330,7 @@ class loadbvh:
         return np.array(k), np.array(p), framesGTransM, framesCTransM
 
     def skeleton2bvh(self, framesskeleton):
-
+        """convert Euler skeleton to bvh format"""
         bvh = []
         for ff in framesskeleton:
             temp = []
@@ -375,6 +376,7 @@ class loadbvh:
         return np.array(k)
 
     def dqframes2skeletonthrq(self, frames):
+    """convert dq frames to skeleton via quaternions"""
         framesSkeleton = []
         root_pos = ff[:3]
         for idx, ff in enumerate(frames):
@@ -408,6 +410,7 @@ class loadbvh:
         return framesSkeleton
 
     def dqframes2skeleton(self, frames):
+        """convert dq frames to skeleton via rotation matrix"""
         framesSkeleton = []
         for idx, ff in enumerate(frames):
             skeleton_ = {}
@@ -448,6 +451,8 @@ class loadbvh:
         return framesSkeleton
 
     def qframes2skeleton(self, frames):
+        """convert q frames to skeleton"""
+
         framesSkeleton = []
         print(self.order)
         for idx, ff in enumerate(frames):
@@ -478,6 +483,8 @@ class loadbvh:
         return framesSkeleton
 
     def augmentSkeleton(self, skel):
+        """calculate positions"""
+
         skeleton = skel.copy()
         channel_count = 0;
         for nn in skel.keys():

@@ -48,18 +48,21 @@ def step6(path_to_read, path_to_write, order):
     z.writeallqpos()
 def step7(path_to_read, path_to_write, order):
     """
-    Step7 : export axis angle positional data
+    Step7 : export axis angle data
     """
     z = allbvh2other(path_to_read, path_to_write, order)
     z.writeallaxanglepos()
 
 # def step5(dirname, order,mixamo):
+#     """
+#     Step7 : export foot contact labels
+#     """
 #     create_fc_of_dir(dirname,
 #                      dirname + "/FC", order,mixamo=mixamo)
 
 def step8(path_to_read,path_to_write):
     """
-        Step7 : export quatpositional31 reduced from dquats
+        Step7 : export quatpositional31 (quaternions with positions) reduced from dquats
         """
     parents = [None, 0, 1, 2, 3, 4, 0, 6, 7, 8, 9, 0, 11, 12, 13, 14, 15, 13, 17, 18, 19, 20, 21, 20, 13, 24, 25, 26,
                27, 28, 27]
@@ -70,6 +73,9 @@ def step8(path_to_read,path_to_write):
         np.save(path_to_write + "/" + i, np.concatenate((root,localquats, positions), axis=1))
 
 def step9(path_to_readortho6D,path_to_readpos,path_to_write):
+    """
+    Step7 : export ortho6D positions 
+    """
     path_to_readortho6D = "/DATA/Projects/2020/lstm_pro/src/databases/61/ortho6D"
     path_to_readpos = "/DATA/Projects/2020/lstm_pro/src/databases/61/quatspos31"
     path_to_write = "/DATA/Projects/2020/lstm_pro/src/databases/61/ortho6Dpos"

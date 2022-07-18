@@ -12,7 +12,7 @@ def localquats2currentdq(lq, offsets, parh,joints_num = 32):
 
     inputs
     ------
-    lq: array of local quaternions, size:#frames x (number of joints used*4)
+    lq: array of local quaternions, size: (T,J*4) (#frames x (number of joints used*4))
     offsets: array, size: #joints used x 3
     parh: parents list , for us size = 31 (I think for MotioNet - the joints that the network predicts)
 
@@ -52,7 +52,7 @@ def currentdq2localquats(cq, parh,joints_num = 32):
 
     inputs
     ------
-    cq: current dual quaternions for each joint, size: #frames x (#joints used *8)
+    cq: current dual quaternions for each joint, size: (TxJ*4) #frames x (#joints used *8)
     parhh: parents list, for us size = 31 (I think for MotioNet - the joints that the network predicts)
     parh: parents list (same size as h)
 
@@ -94,14 +94,15 @@ def qrl_curr(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, order='zyx'):
 
     inputs
     -------
-    out_seq: generated frames (if not in the format #frames x (#joints x 8) need to convert to that)
+    out_seq: generated frames (if not in the format (T, J, 8)#frames x (#joints x 8) need to convert to that)
     groundtruth_seq: groundtruth frames (if not in the format #frames x (#joints x 8) need to convert to that)
     batch_sz: int, batch size
     joints_num: int, #predicted joints
     order: BVH order (zyx for CMU)
 
     outputs
-    -------"""
+    -------
+     scalar, loss"""
 
     rotloss = 0
 
@@ -124,7 +125,7 @@ def qrl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None,
 
     inputs
     -------
-    out_seq: generated frames (if not in the format #frames x (#joints x 8) need to convert to that)
+    out_seq: generated frames (if not in the format (T, J, 8) #frames x (#joints x 8) need to convert to that)
     groundtruth_seq: groundtruth frames (if not in the format #frames x (#joints x 8) need to convert to that)
     batch_sz: int, batch size
     joints_num: int, #predicted joints
@@ -152,7 +153,7 @@ def dl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True)
 
     inputs
     --------
-    out_seq: generated from network, has size batch x (#joints *8)
+    out_seq: generated from network, has size (B,J,8) batch x (#joints *8)
     groundtruth_seq: groundtruth values, has size batch x (#joints *8)
     batch_sz: int, batch size
     joints_num: int, # joints to predict
@@ -204,7 +205,7 @@ def dl2(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True
 
     inputs
     --------
-    out_seq: generated from network, has size batch x (#joints *8)
+    out_seq: generated from network, has size (B,J,8) batch x (#joints *8)
     groundtruth_seq: groundtruth values, has size batch x (#joints *8)
     batch_sz: int, batch size
     joints_num: int, # joints to predict
@@ -251,43 +252,148 @@ def dl2(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True
     return loss, loss_bl
 
 def qconj(q):
+    """
+    Returns conjugate of quaternion
+    inputs
+    -------
+    q: torch.tensor, shape: (*,4)
+    
+    outputs
+    -------
+    torch.tensor (*,4), conjugate quaternion """
     return torch.cat((q[:,0][:,None],-q[:,1][:,None],-q[:,2][:,None],-q[:,3][:,None]),dim=1)
 
 def qconj_np(q):
+    """
+    Returns conjugate of quaternion
+    inputs
+    -------
+    q: np.array, shape: (*,4)
+    
+    outputs
+    -------
+    np.array (*,4), conjugate quaternion """
     return np.concatenate((q[:,0][:,None],-q[:,1][:,None],-q[:,2][:,None],-q[:,3][:,None]),1)
 
 def dqconj(dq):
+    """
+    Returns conjugate of dual quaternion
+    inputs
+    -------
+    q: torch.tensor, shape: (*,8)
+    
+    outputs
+    -------
+    torch.tensor (*,8), conjugate dual quaternion """
     return torch.cat((dq[:,0][:,None],-dq[:,1][:,None],-dq[:,2][:,None],-dq[:,3][:,None],-dq[:,4][:,None],dq[:,5][:,None],dq[:,6][:,None],dq[:,7][:,None]),dim=1)
 
 def dqconj_np(dq):
+    """
+    Returns conjugate of dual quaternion
+    inputs
+    -------
+    q: np.array, shape: (*,8)
+    
+    outputs
+    -------
+    np.array (*,8), conjugate dual quaternion """
     dq = torch.from_numpy(dq).contiguous()
     return dqconj(dq).numpy()
     
 def dqinv(dq):
+    """
+    Returns inverse of dual quaternion
+    inputs
+    -------
+    q: torch.tensor, shape: (*,8)
+    
+    outputs
+    -------
+    torch.tensor (*,8), inverse dual quaternion """
     return torch.cat((dq[:,0][:,None],-dq[:,1][:,None],-dq[:,2][:,None],-dq[:,3][:,None],dq[:,4][:,None],-dq[:,5][:,None],-dq[:,6][:,None],-dq[:,7][:,None]),dim=1)
 
 def dqinv_np(dq):
+    """
+    Returns inverse of dual quaternion
+    inputs
+    -------
+    q: np.array, shape: (*,8)
+    
+    outputs
+    -------
+    np.array (*,8), inverse dual quaternion """
     dq = torch.from_numpy(dq).contiguous()
     return dqinv(dq).numpy()
 
 def dqrot(dq_trans,dq_point):
+    """
+    Rotates a point by a dual quaternion
+    inputs
+    -------
+    dq_trans: transformation, torch.tensor, shape: (*,8)
+    dq_point: point, torch.tensor, shape: (*,8)
+    
+    outputs
+    -------
+    torch.tensor (*,3), rotated point """
     return dqmul(dqmul(dq_trans,dq_point),dqconj(dq_trans))[:,5:]
     
 def dqrot_np(dq_trans,dq_point):
+    """
+    Rotates a point by a dual quaternion
+    inputs
+    -------
+    dq_trans: transformation, np.array.tensor, shape: (*,8)
+    dq_point: point, np.array, shape: (*,8)
+    
+    outputs
+    -------
+    np.array (*,3), rotated point """
     dq_trans = torch.from_numpy(dq_trans).contiguous()
     dq_point= torch.from_numpy(dq_point).contiguous()
     return dqrot(dq_trans,dq_point).numpy()
 
 def is_unit(dq,stop=True):
+    """
+    Checks if dual quaternion is unit.
+    inputs
+    -------
+    dq: dual quaternions, torch.tensor, shape: (*,8)
+    stop: bool, stop if not unit
+    
+    outputs
+    -------
+    """
     if stop==True:
         assert (torch.norm(dq[:,:4], dim=1)-1<1e-4).all() and (torch.sum(dq[:,:4]*dq[:,4:],dim=1)<1e-3).all()
     return (torch.norm(dq[:,:4], dim=1)-1<1e-4).all() and (torch.sum(dq[:,:4]*dq[:,4:],dim=1)<1e-3).all()
 
 def is_unit_np(dq,stop=True):
+   """
+    Checks if dual quaternion is unit.
+    inputs
+    -------
+    dq: dual quaternions, np.array, shape: (*,8)
+    stop: bool, stop if not unit
+    
+    outputs
+    -------
+    """
     dq = torch.from_numpy(dq).contiguous()
     return is_unit(dq,stop)
     
 def dqnorm(dq,force=False):
+    """
+    Normalizes dual quaternion.
+    inputs
+    -------
+    dq: dual quaternions, torch.tensor, shape: (*,8)
+    force: bool, force normalize (used for network outputs)
+    
+    outputs
+    -------
+    torch.tensor, shape: (*,8), normalized dual quaternions
+    """
     quats = dq[:,:4]
     dualquats = dq[:,4:]
     quats_normalized = F.normalize(quats,dim=1)
@@ -311,21 +417,63 @@ def dqnorm(dq,force=False):
     return torch.cat((quats_normalized,dualquats_normalized),1)
 
 def dqnorm_np(dq):
+    """
+    Normalizes dual quaternion.
+    inputs
+    -------
+    dq: dual quaternions, np.array, shape: (*,8)
+    force: bool, force normalize (used for network outputs)
+    
+    outputs
+    -------
+    np.array, shape: (*,8), normalized dual quaternions
+    """
     dq = torch.from_numpy(dq).contiguous()
     return dqnorm(dq).numpy()
     
 
 def translation(dq):
+    """
+    Extract translation component.
+    inputs
+    -------
+    dq: dual quaternions, torch.tensor, shape: (*,8)
+
+    outputs
+    -------
+    torch.tensor, shape: (*,3), translation
+    """
     dq = dqnorm(dq)
     dualquats_normalized = dq[:,4:]
     qt = qconj(dq[:,:4])
     return qmul(torch.mul(2,dualquats_normalized),qt)[:,1:]
 
 def translation_np(dq):
+   """
+    Extract translation component.
+    inputs
+    -------
+    dq: dual quaternions, np.array, shape: (*,8)
+    
+    outputs
+    -------
+    np.array, shape: (*,3), translation
+    """
     dq = torch.from_numpy(dq).contiguous()
     return translation(dq).numpy()
+    
 def dqmul(dq, dq1):  # accepts normalized quaternions (*,8)
-
+    """
+    Multiplies two normalized dual quaternions. 
+    inputs
+    -------
+    dq1: dual quaternions, torch.tensor, shape: (*,8)
+    dq2: dual quaternions, torch.tensor, shape: (*,8)
+    
+    outputs
+    -------
+    torch.tensor, shape: (*,8), multiplication result
+    """
     q = dq[:, :4]
     r = dq1[:, :4]
 
@@ -339,6 +487,17 @@ def dqmul(dq, dq1):  # accepts normalized quaternions (*,8)
     return torch.cat((q_, d_), 1)
     
 def dqmul_np(dq,dq1): #accepts normalized quaternions (*,8)
+    """
+    Multiplies two normalized dual quaternions. 
+    inputs
+    -------
+    dq1: dual quaternions, np.array, shape: (*,8)
+    dq2: dual quaternions, np.array, shape: (*,8)
+    
+    outputs
+    -------
+    np.array, shape: (*,8), multiplication result
+    """
     dq = torch.from_numpy(dq).contiguous()
     dq1 = torch.from_numpy(dq1).contiguous()
     return dqmul(dq, dq1).numpy()
@@ -349,8 +508,15 @@ def qfix_dq(dq):
     the representation (dq or -dq) with minimal distance (or, equivalently, maximal dot product)
     between two consecutive frames.
 
-    Expects a tensor of shape (L, J, 8), where L is the sequence length and J is the number of joints.
+    Expects a tensor of shape (T, J, 8), where T is the sequence length and J is the number of joints.
     Returns a tensor of the same shape.
+    
+    inputs
+    ------------
+    dq: dual quaternions, shape: (T,J,8)
+    outputs
+    ------------
+    torch.tensor, shape: (T,J,8) fixed dual quaternions
     """
     q = dq[:, :, :4]
     d = dq[:, :, 4:]
@@ -389,6 +555,17 @@ def qfix_dq(dq):
 #     return translation_np(dqmul_np(dqinv_np(dqnorm_np(dq_par)) , dq)).reshape(batch,seq_len,joints_num,3)
 
 def get_offsets(dq,parh,nj=26):
+   """
+    Extract offsets.
+    inputs
+    -------
+    dq: dual quaternions, torch.tensor, shape: (*,8)
+    parh: list, hierarchy of joints
+    nj: int, number of joints
+    outputs
+    -------
+    torch.tensor, shape: (*,3), offsets
+    """
     parh[0] = 0
     dq_par = dq[:,:,parh,:]
     dq_par[:,:,0,:] = torch.Tensor([1,0,0,0,0,0,0,0])
@@ -399,6 +576,17 @@ def get_offsets(dq,parh,nj=26):
     return translation(dqmul(dqinv(dqnorm(dq_par)) , dq)).reshape(-1,nj,3)
 
 def get_offsets_np(dq,parh,nj=26):
+   """
+    Extract offsets.
+    inputs
+    -------
+    dq: dual quaternions, np.array, shape: (*,8)
+    parh: list, hierarchy of joints
+    nj: int, number of joints
+    outputs
+    -------
+    np.array, shape: (*,3), offsets
+    """
     parh[0] = 0
     dq_par = dq[:,:,parh,:]
     dq_par[:,:,0,:] = [1,0,0,0,0,0,0,0]
@@ -410,6 +598,18 @@ def get_offsets_np(dq,parh,nj=26):
     
 
 def currentdq2localdq(currentq,parh):
+   """Current dual quaternions to local dual quaternions
+
+    inputs
+    ------
+    currentq: torch.tensor, current dual quaternions for each joint, size: (TxJ,8) #frames x (#joints used *8)
+    parh: parents list (same size as h)
+
+
+    outputs
+    -------
+    local dual quaternions, size (T,J,8)
+    """
     assert currentq.shape[-1] == 8
     assert len(currentq.shape)==3
     qparents  = currentq[ :, parh, :]
@@ -420,6 +620,18 @@ def currentdq2localdq(currentq,parh):
     return localq.reshape(currentq.shape)
 
 def currentq2localq(currentq,parh):
+   """Current dual quaternions to local quaternions 
+
+    inputs
+    ------
+    currentq: torch.tensor, current dual quaternions for each joint, size: (TxJ,8) #frames x (#joints used *8)
+    parh: parents list (same size as h)
+
+
+    outputs
+    -------
+    local quaternions, size (T,J,4)
+    """
     assert currentq.shape[-1] == 4
     assert len(currentq.shape)==3
     qparents  = currentq[ :, parh, :]
