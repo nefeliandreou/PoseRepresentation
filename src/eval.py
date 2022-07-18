@@ -159,6 +159,7 @@ def _sqrt_positive_part(x):
     positive_mask = x > 0
     ret[positive_mask] = torch.sqrt(x[positive_mask])
     return ret
+    
 def matrix_to_quaternion(matrix):
     """
     Convert rotations given as rotation matrices to quaternions.
@@ -330,7 +331,6 @@ for w in weights:
                                                           part='test',
                                                           frame_start=frame_start,
                                                           frame_end=frame_end)
-#                     print(push_seq[9])
                     outt,gtt = model.test_specific_input_dq(motion_clip_name=ps,
                                             motion_db_part='test',
                                             start_motion_frame=frame_start,

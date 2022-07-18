@@ -19,16 +19,16 @@ The code was tested on Python 3.6.9 and PyTorch 1.2.0.
 
 ## Usage
 
-- The files [extenddb.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/extenddb.py) and [generate_motion_in_dualquaternions.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/generate_motion_in_dualquaternions.py) are used to convert the .bvh files to the different representations. 
-- Forward kinematics is calculated using the file [skeleton.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/common/skeleton.py).
-- The file [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py) contains the operations which are used during training (calculating translation/rotation, etc.)
-- The file [twist_losses.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/twist_losses.py) contains the operations which are used during training of acRNN and is based on  [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py). 
+- [extenddb.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/extenddb.py) and [generate_motion_in_dualquaternions.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/generate_motion_in_dualquaternions.py) are used to convert the .bvh files to the different representations. 
+- Forward kinematics is calculated using the  [skeleton.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/common/skeleton.py).
+- [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py) contains the operations which are used during training (calculating translation/rotation, etc.)
+- [twist_losses.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/twist_losses.py) contains the operations which are used during training of acRNN and is based on  [dualquats.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/dualquats.py). 
 
 
 ## License
 This code is distributed under an [MIT LICENSE](LICENSE).
 
-Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), while the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion). 
+Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), while the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion). Please respect the individual licenses when using these files.
 
 ## Acknowledgments
 

@@ -215,16 +215,10 @@ class loadbvh:
             temp.append(loadbvh.seq6D2euler(seq, order))
         return np.array(temp)
 
-        # return seq6D[:3]+list(np.array([k for k in [[j*180/np.pi for j in euler.mat2euler(loadbvh.rotfromortho6d(seq6D[i:i+6]),axes='rzxy')] for i in range(3,186,6)]]).reshape(93,))
 
     def skeleton2dq(self):
         """given a skeleton which includes Dxyz, rxyz, transM per frame, converts all bvh data to dq"""
         framesDQC = []
-        # print("dq-----------------------------------------")
-        # framesDQG = []
-        # framesGTransM = []
-        # framesCTransM = []
-
         for ff in range(self.sample_data.shape[0]):
             GlobalTransM = {}
             CurrentTransM = {}
@@ -233,12 +227,8 @@ class loadbvh:
             for nn in self.skeleton.keys():
                 if self.skeleton[nn]['parent'] == None:
                     # root
-
-                    # GlobalTransM[nn] = loadbvh.transformation_matrix(self.skeleton[nn]['Dxyz'][:, ff],
-                    #                                                  self.skeleton[nn]['rxyz'][:, ff], self.o)
                     CurrentTransM[nn] = loadbvh.transformation_matrix([0, 0, 0], self.skeleton[nn]['rxyz'][:, ff],
                                                                       self.o)
-                    # DQG[nn] = loadbvh.Mat2DQuat(GlobalTransM[nn])
                     DQC[nn] = loadbvh.Mat2DQuat(CurrentTransM[nn])
 
                 elif self.skeleton[nn]['channels'] != []:
@@ -246,24 +236,9 @@ class loadbvh:
                     LocalHomoTransM = loadbvh.transformation_matrix(self.skeleton[nn]['offsets'],
                                                                     self.skeleton[nn]['rxyz'][:, ff], self.o)
                     CurrentTransM[nn] = self.skeleton[parent]['transC'][:, :, ff] @ LocalHomoTransM
-                    # GlobalTransM[nn] = self.skeleton[parent]['transG'][:, :, ff] @ LocalHomoTransM
-                    # if ff==1:
-                    #     print(CurrentTransM[nn] )
                     DQC[nn] = loadbvh.Mat2DQuat(CurrentTransM[nn])
-                    # DQG[nn] = loadbvh.Mat2DQuat(GlobalTransM[nn])
             framesDQC.append(DQC)
-            # framesDQG.append(DQG)
-            # framesGTransM.append(GlobalTransM)
-            # framesCTransM.append(CurrentTransM)
-
-        # k = []
-        # for ff in range(self.Nframes):
-        #     temp = list(self.skeleton[self.root_joint]['Dxyz'][:, ff])
-        #     for i in framesDQG[ff].items():
-        #         for j in i[1]:
-        #             temp.append(j)
-        #     k.append(temp)
-
+     
         p = []
         for ff in range(self.Nframes):
             temp = list(self.skeleton[self.root_joint]['Dxyz'][:, ff])
@@ -271,7 +246,6 @@ class loadbvh:
                 for j in i[1]:
                     temp.append(j)
             p.append(temp)
-        # return np.array(k), np.array(p), framesGTransM, framesCTransM
         return np.array(p)
 
     def skeleton2ortho6D(self, order='zxy'):
@@ -304,7 +278,6 @@ class loadbvh:
         return np.array(p)
 
     def skeleton2dq2(self, data, skeleton):
-        # print("sq")
         """given a skeleton which includes Dxyz, rxyz, transM per frame, converts all bvh data to dq"""
         framesDQC = []
         framesDQG = []
@@ -435,7 +408,6 @@ class loadbvh:
         return framesSkeleton
 
     def dqframes2skeleton(self, frames):
-        # print("dqframes")
         framesSkeleton = []
         for idx, ff in enumerate(frames):
             skeleton_ = {}
@@ -446,17 +418,12 @@ class loadbvh:
             for joint_idx, joint in enumerate(self.non_end_bones):
                 # here globaltransM is taken directly from BVH
                 skeleton_[joint]['CurrentTransM'] = loadbvh.DQ2Mat(ff[3 + joint_idx * 8:3 + 8 + joint_idx * 8])
-                # if joint == self.root_joint:
-                #     skeleton_[joint]['GlobalTransM'] = loadbvh.DQ2Mat(ff[3 + joint_idx * 8:3 + 8 + joint_idx * 8])
-                #     skeleton_[joint]['GlobalTransM'][:3, 3] = root_pos
 
                 skeleton_[joint]['quat'] = ff[3 + joint_idx * 8:3 + 8 + joint_idx * 8][:4]
                 skeleton_[joint]['dualquat'] = ff[3 + joint_idx * 8:3 + 8 + joint_idx * 8][4:]
 
             for joint_idx, joint in enumerate(self.non_end_bones):
                 if joint == self.root_joint:
-                    # skeleton_[joint]['LocalTransMG'] = skeleton_[joint]['GlobalTransM'].copy()
-                    # skeleton_[joint]['LocalTransMG'][:3, 3] = [i for i in self.skeleton[joint]['offsets']]
                     skeleton_[joint]['LocalTransMC'] = skeleton_[joint]['CurrentTransM'].copy()
                     skeleton_[joint]['LocalTransMC'][:3, 3] = [i for i in self.skeleton[joint]['offsets']]
 
@@ -466,36 +433,18 @@ class loadbvh:
                 else:
                     skeleton_[joint]['LocalTransMC'] = np.linalg.inv(
                         skeleton_[self.skeleton[joint]['parent']]['CurrentTransM']) @ skeleton_[joint]['CurrentTransM']
-                    # skeleton_[joint]['GlobalTransM'] = skeleton_[self.skeleton[joint]['parent']]['GlobalTransM'] @ \
-                    #                                    skeleton_[joint]['LocalTransMC']
-                    # skeleton_[joint]['LocalTransMG'] = np.linalg.inv(
-                    #     skeleton_[self.skeleton[joint]['parent']]['GlobalTransM']) @ skeleton_[joint]['GlobalTransM']
                 if self.order == 'rzxy':
 
                     angles = [i * 180 / np.pi for i in
                               euler.mat2euler(skeleton_[joint]['LocalTransMC'][:3, :3], axes=self.order)]
                     skeleton_[joint]['rxyz'] = [angles[1], angles[2], angles[0]]
-                    # skeleton_[joint]['Dxyz'] = skeleton_[joint]['GlobalTransM'][:3, 3]
 
                 elif self.order == 'rzyx':
 
                     angles = euler.mat2euler(skeleton_[joint]['LocalTransMC'][:3, :3])
                     skeleton_[joint]['rxyz'] = np.array(angles) * 180 / np.pi
-                    #                     assert np.allclose(skeleton_[joint]['rxyz'],self.skeleton[joint]['rxyz'][:,idx])
-                    # skeleton_[joint]['Dxyz'] = skeleton_[joint]['GlobalTransM'][:3, 3]
                     skeleton_[joint]['Dxyz'] = root_pos
             framesSkeleton.append(skeleton_)
-            # checkGLOBCURR(framesSkeleton)
-        # for ff in range(self.Nframes):
-        #     for j in self.non_end_bones:
-        #         if (framesSkeleton[ff][j]["LocalTransMC"][:3, 3] \
-        #             - loadbvh.transformation_matrix(self.skeleton[j]['offsets'], self.skeleton[j]['rxyz'][:, ff], [2, 1, 0])[:3,
-        #               3]).any() > 1e-10:
-        #             assert (np.allclose(framesSkeleton[ff][j]["LocalTransMC"],
-        #                                 loadbvh.transformation_matrix(self.skeleton[j]['offsets'],
-        #                                                       self.skeleton[j]['rxyz'][:, ff], [2, 1, 0])))
-        #             ang = rotationMatrixToEulerAngles(framesSkeleton[ff][j]["LocalTransMC"][:3, :3])
-        #             assert np.allclose(np.array(ang) * 180 / np.pi, self.skeleton[j]['rxyz'][:, ff])
         return framesSkeleton
 
     def qframes2skeleton(self, frames):
@@ -509,7 +458,6 @@ class loadbvh:
 
             for joint_idx, joint in enumerate(self.non_end_bones):
                 # here globaltransM is taken directly from BVH
-
                 quat = ff[3 + joint_idx * 4:3 + 4 + joint_idx * 4]
                 if joint == 'Hips':
                     skeleton_[joint]['Dxyz'] = root_pos
@@ -524,14 +472,12 @@ class loadbvh:
 
                     angles = euler.quat2euler(quat)
                     skeleton_[joint]['rxyz'] = np.array(angles) * 180 / np.pi
-                    #                     assert np.allclose(skeleton_[joint]['rxyz'],self.skeleton[joint]['rxyz'][:,idx])
 
             framesSkeleton.append(skeleton_)
 
         return framesSkeleton
 
     def augmentSkeleton(self, skel):
-        # print("augment")
         skeleton = skel.copy()
         channel_count = 0;
         for nn in skel.keys():
@@ -539,8 +485,6 @@ class loadbvh:
                 # assume translational data always XYZ
                 Dxyz = np.zeros((self.Nframes, 3))
 
-                ###think about this
-                ##Dxyz = np.array(skeleton[nn]['offsets'])[None,:]
                 Dxyz = np.array(self.sample_data)[:, :3] + np.array(skeleton[nn]['offsets'])[None, :]
                 skeleton[nn]['Dxyz'] = Dxyz.T
 
@@ -570,8 +514,6 @@ class loadbvh:
             elif len(skeleton[nn]['channels']) == 0:
                 Dxyz = np.zeros((3, self.Nframes))
                 skeleton[nn]['Dxyz'] = Dxyz
-                # transM = np.zeros((4,4,Nframes))
-                # skeleton[nn]['trans'] = transM
             channel_count += len(skeleton[nn]['channels'])
 
         for nn in [i for i in skeleton.keys() if (len(skeleton[i]['channels']) != 0) & (skeleton[i]['parent'] != None)]:
@@ -579,8 +521,6 @@ class loadbvh:
             for ff in range(self.Nframes):
                 transM = loadbvh.transformation_matrix(skeleton[nn]['offsets'], skeleton[nn]['rxyz'][:, ff], self.o)
                 skeleton[nn]['transC'][:, :, ff] = skeleton[parent]['transC'][:, :, ff] @ transM
-                # if ff==1:
-                #     print(skeleton[nn]['transC'][:, :, ff] )
 
                 skeleton[nn]['transG'][:, :, ff] = skeleton[parent]['transG'][:, :, ff] @ transM
                 skeleton[nn]['Dxyz'][:, ff] = skeleton[nn]['transG'][:3, 3, ff]
@@ -592,9 +532,7 @@ class loadbvh:
                 tempTrans[:3, 3] = skeleton[nn]['offsets']
                 transM = skeleton[parent]['transG'][:, :, ff] @ tempTrans
                 skeleton[nn]['Dxyz'][:, ff] = transM[:3, 3]
-                # skeleton[nn]['trans'][:3,3]=skeleton[nn]['Dxyz']
-        # print()
-        # print()
+           
         return skeleton
 
     def exportpositions(self, outfolder='',save=True):
@@ -624,8 +562,6 @@ class loadbvh:
     #         self.check()
 
 # k = loadbvh("/DATA/Projects/2020/lstm_pro/src/databases/contemporary/bvh/MaritsaElia_Excited.bvh")
-# k
-
 
 # count=0
 # for ff in range(k.Nframes):

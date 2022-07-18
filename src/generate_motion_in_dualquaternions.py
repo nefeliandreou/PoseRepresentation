@@ -65,7 +65,6 @@ class allbvh2other(loadbvh):
             self.standard_bvh_file = file
             self.bvh_file_in = self.fp_in + '/' + file
             self.bvh_file_out = 'bvh_reconstruct/' + str(file).split('.bvh')[0] + '2.bvh'
-#             print(self.fp_in + '/' + str(file))
             p = loadbvh(bvh_file=self.fp_in + '/' + str(file), order=self.order)
             p()
             self.write_dq_to_bvh(self.bvh_file_out, p.framesDQC, p)

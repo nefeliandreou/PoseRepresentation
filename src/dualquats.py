@@ -117,9 +117,7 @@ def qrl_curr(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, order='zyx'):
 
     return torch.mean(torch.abs(angle_distance)).item()
 
-    # b. applied on local quaternions
-
-
+# b. applied on local quaternions
 def qrl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None,
         order='zyx'):  # groundtruth_seq 32,25100(251*100)
     """calculates quaternion rotational loss
@@ -148,7 +146,6 @@ def qrl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None,
 
 
 # Positional and Bone
-
 def dl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True):
     """
     calculates positional loss
@@ -200,6 +197,7 @@ def dl(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True)
     loss = batchloss / batch_sz
     loss_bl = batchloss_bl / batch_sz
     return loss, loss_bl
+    
 def dl2(out_seq, groundtruth_seq, batch_sz=32, joints_num=31, parh=None, bl=True):
     """
     calculates positional loss
@@ -258,13 +256,13 @@ def qconj(q):
 def qconj_np(q):
     return np.concatenate((q[:,0][:,None],-q[:,1][:,None],-q[:,2][:,None],-q[:,3][:,None]),1)
 
-
 def dqconj(dq):
     return torch.cat((dq[:,0][:,None],-dq[:,1][:,None],-dq[:,2][:,None],-dq[:,3][:,None],-dq[:,4][:,None],dq[:,5][:,None],dq[:,6][:,None],dq[:,7][:,None]),dim=1)
 
 def dqconj_np(dq):
     dq = torch.from_numpy(dq).contiguous()
     return dqconj(dq).numpy()
+    
 def dqinv(dq):
     return torch.cat((dq[:,0][:,None],-dq[:,1][:,None],-dq[:,2][:,None],-dq[:,3][:,None],dq[:,4][:,None],-dq[:,5][:,None],-dq[:,6][:,None],-dq[:,7][:,None]),dim=1)
 
@@ -274,6 +272,7 @@ def dqinv_np(dq):
 
 def dqrot(dq_trans,dq_point):
     return dqmul(dqmul(dq_trans,dq_point),dqconj(dq_trans))[:,5:]
+    
 def dqrot_np(dq_trans,dq_point):
     dq_trans = torch.from_numpy(dq_trans).contiguous()
     dq_point= torch.from_numpy(dq_point).contiguous()
@@ -287,18 +286,17 @@ def is_unit(dq,stop=True):
 def is_unit_np(dq,stop=True):
     dq = torch.from_numpy(dq).contiguous()
     return is_unit(dq,stop)
+    
 def dqnorm(dq,force=False):
     quats = dq[:,:4]
     dualquats = dq[:,4:]
     quats_normalized = F.normalize(quats,dim=1)
     norm = torch.norm(quats,dim=1)
-    #
-    # assert (norm>1e-16).all()
     norm =torch.stack((norm,norm,norm,norm),dim=1)
     dualquats_normalized = torch.div(dualquats,norm)
     if force:
         if is_unit(dq,stop=False)==False:
-            # print("force")
+
             q = dq[:, :4]
             d = dq[:, 4:]
 
@@ -338,8 +336,8 @@ def dqmul(dq, dq1):  # accepts normalized quaternions (*,8)
     d_ = qmul(q, d_r) + qmul(d_q, r)
 
     assert (q_ == qmul(q, r)).all()
-
     return torch.cat((q_, d_), 1)
+    
 def dqmul_np(dq,dq1): #accepts normalized quaternions (*,8)
     dq = torch.from_numpy(dq).contiguous()
     dq1 = torch.from_numpy(dq1).contiguous()
