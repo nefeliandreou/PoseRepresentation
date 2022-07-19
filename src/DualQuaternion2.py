@@ -2,6 +2,7 @@
 DualQuaternions operations, interpolation, conversions
 attempt to substitute pyquaternion with np.quaternion
 Author: Achille Verheye
+Edited by: Nefeli Andreou 
 License: MIT
 """
 import numpy as np
