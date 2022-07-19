@@ -28,7 +28,8 @@ The code was tested on Python 3.6.9 and PyTorch 1.2.0.
 ## License
 This code is distributed under an [MIT LICENSE](LICENSE).
 
-Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), while the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion). Please respect the individual licenses when using these files.
+Note that the functions in [common](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/common) are borrowed by [QuaterNet](https://github.com/facebookresearch/QuaterNet), the functions in [bvh](https://github.com/nefeliandreou/PoseRepresentation/tree/master/src/bvh) are borrowed by [acRNN](https://github.com/papagina/Auto_Conditioned_RNN_motion), 
+and the functions in [DualQuaternion2.py](https://github.com/nefeliandreou/PoseRepresentation/blob/master/src/DualQuaternion2.py) from [this](https://github.com/Achllle/dual_quaternions/blob/master/src/dual_quaternions/dual_quaternions.py) repository. Please respect the individual licenses when using these files.
 
 ## Acknowledgments
 
