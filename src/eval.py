@@ -13,6 +13,7 @@ import torch.nn.functional as F
 
 def compute_accel(features):
     """
+    Borrowed from: https://github.com/mkocabas/VIBE/blob/master/lib/utils/eval_utils.py
     Computes acceleration of 3D joints.
     Args:
         joints (NxJx3).
@@ -23,32 +24,30 @@ def compute_accel(features):
     batch = features.shape[0]
     # markers = markers.reshape(-1, markers.shape[0], 67, 3)
     total_accel = 0
-    total_vel = 0
     for m_s in features:
         velocities = m_s[1:] - m_s[:-1]
         acceleration = velocities[1:] - velocities[:-1]
         acceleration_normed = np.linalg.norm(acceleration, axis=2)
         
-        velocities_normed = np.linalg.norm(velocities, axis=2)
-        sample_vel = np.mean(velocities_normed, axis=1)
-        total_vel += np.mean(sample_vel)
-        
         sample_accel = np.mean(acceleration_normed, axis=1)
         total_accel += np.mean(sample_accel)
-    return total_accel/batch, total_vel/batch
+    return total_accel/batch
 
 
 def rot6d_to_rotmat(x):
-    """Convert 6D rotation representation to 3x3 rotation matrix.
+    """
+    Borrowed from: https://github.com/nkolot/SPIN/blob/master/utils/geometry.py
+    Adapted by Nefeli Andreou
+    Convert 6D rotation representation to 3x3 rotation matrix.
     Based on Zhou et al., "On the Continuity of Rotation Representations in Neural Networks", CVPR 2019
     Input:
         (B,6) Batch of 6-D rotation representations
     Output:
         (B,3,3) Batch of corresponding rotation matrices
     """
-#             x = x.reshape(-1,3,2)
-    a1 = x[:, 0:3]
-    a2 = x[:, 3:6]
+#             x = x.reshape(-1,3,2) #changed compared to https://github.com/nkolot/SPIN/blob/master/utils/geometry.py
+    a1 = x[:, 0:3] #changed compared to https://github.com/nkolot/SPIN/blob/master/utils/geometry.py
+    a2 = x[:, 3:6] #changed compared to https://github.com/nkolot/SPIN/blob/master/utils/geometry.py
     b1 = F.normalize(a1)
     b2 = F.normalize(a2 - torch.einsum('bi,bi->b', b1, a2).unsqueeze(-1) * b1)
     b3 = torch.cross(b1, b2)
@@ -136,6 +135,7 @@ def rotation_matrix_to_quaternion(rotation_matrix, eps=1e-6):
     return q
 def _copysign(a, b):
     """
+    Borrowed from: https://github.com/Mathux/ACTOR/blob/master/src/utils/rotation_conversions.py
     Return a tensor where each element has the absolute value taken from the,
     corresponding element of a, with sign taken from the corresponding
     element of b. This is like the standard copysign floating-point operation,
@@ -152,6 +152,7 @@ def _copysign(a, b):
 
 def _sqrt_positive_part(x):
     """
+    Borrowed from: https://github.com/Mathux/ACTOR/blob/master/src/utils/rotation_conversions.py
     Returns torch.sqrt(torch.max(0, x))
     but with a zero subgradient where x is 0.
     """
@@ -162,6 +163,7 @@ def _sqrt_positive_part(x):
     
 def matrix_to_quaternion(matrix):
     """
+    Borrowed from: https://github.com/Mathux/ACTOR/blob/master/src/utils/rotation_conversions.py
     Convert rotations given as rotation matrices to quaternions.
     Args:
         matrix: Rotation matrices as tensor of shape (..., 3, 3).
@@ -184,6 +186,7 @@ def matrix_to_quaternion(matrix):
 
 def fast_npss(gt_seq, pred_seq):
     """
+    Borrowed from: https://github.com/ubisoft/ubisoft-laforge-animation-dataset/blob/master/lafan1/benchmarks.py
     Computes Normalized Power Spectrum Similarity (NPSS).
     This is the metric proposed by Gropalakrishnan et al (2019).
     This implementation uses numpy parallelism for improved performance.
@@ -226,41 +229,6 @@ def fast_npss(gt_seq, pred_seq):
     return power_weighted_emd
 
 
-def foot_skating(markers,height_thresh=5e-2 , velocity_thresh=5e-3):
-    """
-    Computes acceleration of 3D joints. Assumes Y is up vector.
-    Args:
-        joints: np.array, (B,T,M,3) 
-    Returns:
-        foot skating
-        
-    
-    """
-
-    batch = markers.shape[0]
-    frames = markers.shape[1]
-
-    # markers = markers.reshape(-1, markers.shape[0], 67, 3)
-    # left + right heel and toes
-    
-#     feet_ids = [16, 50] # 25, 59
-    feet_ids = [5,10]
-    total_skating = 0
-    for m_s in markers:
-        n=-1
-        verts_feet = m_s[:n, feet_ids, :]
-        verts_feet_horizon_vel = np.linalg.norm(verts_feet[1:, :, [0,2]]-verts_feet[:-1, :, [0,2]], axis=-1)
-        verts_feet_height = m_s[:n, feet_ids, 1]
-        verts_feet_height = verts_feet_height[1:]
-        thresh_height = height_thresh
-        thresh_vel = velocity_thresh
-        skating = (verts_feet_horizon_vel > thresh_vel)*(np.abs(verts_feet_height) < thresh_height)
-        cond = np.logical_and(skating[:, 0], skating[:, 1])
-        skating = np.sum(cond) / frames
-        total_skating += skating
-    total_skating = total_skating / batch
-    return total_skating
-    
 #--------------------------------------------------------
 net_confs =  [
 # '/DATA/Projects/2020/lstm_pro/results/001_quatspos31/run.json',
@@ -421,9 +389,6 @@ for w in weights:
         print(w, net_conf.split("/")[-2], "accel_pred", compute_accel(pos_gt.cpu().detach().numpy()))
         print(model.iteration, net_conf.split("/")[-2], "loss", loss.item())
         print(model.iteration, net_conf.split("/")[-2], "npss", fast_npss(pos_gt.cpu().detach().numpy(), pos_pred.cpu().detach().numpy()))
-#             print(model.iteration, net_conf.split("/")[-2], "fs_gt", foot_skating(pos_gt.cpu().detach().numpy()))
-#             print(model.iteration, net_conf.split("/")[-2], "fs_pred", foot_skating(pos_pred.cpu().detach().numpy()))
-
 #             allw[w].append((net_conf, loss.item()))
 
 
