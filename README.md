@@ -1,7 +1,8 @@
 # Pose Representations for Deep Skeletal Animation
 
 Official implementation of dual quaternion transformations as described in the paper [**"Pose Representations for Deep Skeletal Animation"**](https://nefeliandreou.github.io/assets/pdf/DQ_21.pdf).
-
+[![report](https://img.shields.io/badge/arXiv-2204.08451-b31b1b.svg)](https://arxiv.org/abs/2204.08451)
+<a href="https://evonneng.github.io/learning2listen/"><img src="https://img.shields.io/badge/project page-github.io-blue"/></a> 
 Please visit our [project page](https://nefeliandreou.github.io/projects/pose_representation/) for more details and check our [YouTube video](https://www.youtube.com/watch?v=bZKc_8s-XIk)!
 
 <p float="center">
