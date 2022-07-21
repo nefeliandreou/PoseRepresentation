@@ -257,7 +257,6 @@ weights = [
 allw= {}
 for w in weights:
     allw[w] = []
-psgt = []
 for w in weights:
     for net_conf in net_confs:
 
@@ -380,11 +379,11 @@ for w in weights:
             # get positions
             pos_gt = sk.forward_kinematics(torch.FloatTensor(gt_2.reshape(B,S,31,4)).cuda(), torch.zeros((B,S,3),dtype=torch.float).cuda()*1e-10)
             pos_pred = sk.forward_kinematics(torch.FloatTensor(pred_2.reshape(B,S,31,4)).cuda(), torch.zeros((B,S,3),dtype=torch.float).cuda()*1e-10)
-
+        
+        # calculate euclidean distance
         loss = torch.mean((pos_gt.reshape(B,S,31,3) - pos_pred.reshape(B,S,31,3)).norm(dim=3))
-        psgt.append(pos_gt)
-       
 
+        # calculate acceleration 
         print(w, net_conf.split("/")[-2], "accel_pred", compute_accel(pos_pred.cpu().detach().numpy()))
         print(w, net_conf.split("/")[-2], "accel_pred", compute_accel(pos_gt.cpu().detach().numpy()))
         print(model.iteration, net_conf.split("/")[-2], "loss", loss.item())
