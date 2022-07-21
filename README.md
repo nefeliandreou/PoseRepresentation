@@ -4,7 +4,7 @@ Official implementation of dual quaternion transformations as described in the p
 
 [![report](https://img.shields.io/badge/arXiv-2204.08451-b31b1b.svg)](https://arxiv.org/abs/2111.13907)
 <a href="https://nefeliandreou.github.io/projects/PoseRepresentation/"><img src="https://img.shields.io/badge/project page-github.io-blue"/></a> 
-<a target="_blank" ><img src="https://img.shields.io/apm/l/VIM-MODE"/></a> 
+<a target="_blank" href="https://github.com/nefeliandreou/PoseRepresentation/blob/master/LICENSE"><img src="https://img.shields.io/apm/l/VIM-MODE"/></a> 
 
 
 Check our [YouTube video](https://www.youtube.com/watch?v=bZKc_8s-XIk)!
