@@ -16,9 +16,9 @@ def compute_accel(features):
     Borrowed from: https://github.com/mkocabas/VIBE/blob/master/lib/utils/eval_utils.py
     Computes acceleration of 3D joints.
     Args:
-        joints (NxJx3).
+        joints (BxNxJx3).
     Returns:
-        Accelerations (N-2).
+        Accelerations loss () int.
     """
 
     batch = features.shape[0]
